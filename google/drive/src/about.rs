@@ -16,8 +16,16 @@ impl About {
      *
      * Gets information about the user, the user's Drive, and system capabilities.
      */
-    pub async fn get(&self) -> ClientResult<crate::Response<crate::types::About>> {
-        let url = self.client.url("/about", None);
+    pub async fn get(&self, fields: &str) -> ClientResult<crate::Response<crate::types::About>> {
+        let mut query_args: Vec<(String, String)> = Default::default();
+
+        if !fields.is_empty() {
+            query_args.push(("fields".to_string(), fields.to_string()));
+        }
+
+        let query = serde_urlencoded::to_string(&query_args).unwrap();
+        let url = self.client.url(&format!("/about?{}", query), None);
+
         self.client
             .get(
                 &url,
